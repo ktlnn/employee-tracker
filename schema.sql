@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS employeesDB;
+-- DROP DATABASE IF EXISTS employeesDB;
 
-CREATE DATABASE employeesDB;
+-- CREATE DATABASE employeesDB;
 
 USE employeesDB;
 
@@ -34,10 +34,10 @@ INSERT INTO department (name) VALUES ("sales");
 INSERT INTO department (name) VALUES ("accountant");
 INSERT INTO department (name) VALUES ("developer");
 
-INSERT INTO role (title, salary, department_id) VALUES ();
-INSERT INTO role (title, salary, department_id) VALUES ();
-INSERT INTO role (title, salary, department_id) VALUES ();
+INSERT INTO role (title, salary, department_id) VALUES ("Junior Sales Advisor", 80000, 1);
+INSERT INTO role (title, salary, department_id) VALUES ("Accountant Manager", 100000, 2);
+INSERT INTO role (title, salary, department_id) VALUES ("", ,);
 
-INSERT INTO employee (first_name, last_name, role_id) VALUES ("Rajida", "Jones", 3);
+INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("Rajida", "Jones", 1, null);
 INSERT INTO employee (first_name, last_name, role_id) VALUES ("", "", 2);
 INSERT INTO employee (first_name, last_name, role_id) VALUES ("", "", 1);

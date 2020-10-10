@@ -1,7 +1,5 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
-const consoleTable = require("console.table");
-const util = require('util');
 
 
 var connection = mysql.createConnection({
@@ -20,7 +18,7 @@ var connection = mysql.createConnection({
 
 
 const mainMenu = () => {
-    return inquirer.prompt [(
+    return inquirer.prompt ([
         {
             message: "Main Menu",
             choices: [
@@ -41,20 +39,20 @@ const mainMenu = () => {
             name: "menuitem",
             type: "list"
         }
-    )]
+    ])
     .then((answer) => {
         switch(answer.menuitem){
             case "View all employees":
                 viewAllEmp();
             break;
             case "View all employees by role":
-                viewAllEmpRole();
+                viewAllByRole();
             break;
             case "View all employees by department":
-                viewAllEmpDept();
+                viewAllByDept();
             break;
             case "View all employees by manager":
-                viewAllEmpMan();
+                viewAllByMan();
             break;
             case "Add employee":
                 addEmp();
@@ -86,21 +84,160 @@ const mainMenu = () => {
     })
 }
 
+// function that allows user to view all employees
 const viewAllEmp = () => {
-    let query = "SELECT * FROM employee";
-    connectionQuery(query)
-    .then(res => {
+    connection.query("SELECT * FROM employee", function(err, res) {
+        if(err) throw err;
         console.log("\n")
         console.table(res);
         return mainMenu();
     })
-
 }
 
-const viewAllDept = () => {
-    let deptArr = [];
-    connectionQuery("SELECT name ")
+// function that allows user to view employees by role
+const viewAllByRole = () => {
+    connection.query("SELECT * FROM role", function(err, res){
+        if(err) throw err;
+        console.log("\n")
+        console.table(res);
+        mainMenu();
+    })    
 }
+
+// function that allows user to view employees by department
+const viewAllByDept = () => {
+    connection.query("SELECT * FROM department", function(err, res){
+        if(err) throw err;
+        console.log("\n")
+        console.table(res);
+        mainMenu();
+    })
+}
+
+// function that allows user to view all employees who are a manager
+const viewAllByMan = () =>  {
+    connection.query("SELECT * FROM employee WHERE manager_id IS NOT NULL", function(err, res){
+        if(err) throw err;
+        console.log("\n")
+        console.table(res);
+        mainMenu();
+    })
+}
+
+// function that allows user to add an employee
+const addEmp = () => {
+    inquirer.prompt([
+        {
+            name: "firstName",
+            message: "What is the employee's first name?",
+            type: "input"
+        },
+        {
+            name: "lastName",
+            message: "What is the employee's last name?",
+            type: "input"
+        }
+    ])
+    .then(res => {
+        let firstName = res.firstName;
+        let lastName = res.lastName;
+        connection.query("Select * FROM role", async(err, res) => {
+            if(err) throw err;
+            // console.log(res);
+            const roleChoices = res.map(({id, title}) => ({
+                name: title,
+                value: id
+            }))
+            const roleObj = await inquirer.prompt([
+                {
+                    type: "list",
+                    name: "role",
+                    message: "Which role would you like to give the employee?",
+                    choices: roleChoices
+                }
+            ])
+           connection.query("INSERT INTO employee SET ?", {
+            first_name: firstName,
+            last_name: lastName,
+            role_id: roleObj.role
+           }, function(err, res) {
+               if(err) throw err;
+               console.log("Employee Added");
+               mainMenu();
+           });          
+        });        
+    });
+}
+
+// function that allows user to add a role
+const addEmpRole = () => {
+    inquirer.prompt([
+        {
+            name: "roleName",
+            message: "What role would you like to add?",
+            type: "input"
+        },
+        {
+            name: "roleSalary",
+            message: "What is the salary of this new role?",
+            type: "number"
+        }
+    ]).then(res => {
+        let roleName = res.roleName;
+        let roleSalary = res.roleSalary;
+        connection.query("SELECT * FROM department", async(err, res) => {
+            if(err) throw err;
+            const deptChoices = res.map(({id, name}) => ({
+                name: name,
+                value: id
+            }))
+            const deptObj = await inquirer.prompt([
+                {
+                    type: "list",
+                    name: "department",
+                    message: "Which department would you like to add this role to?",
+                    choices: deptChoices
+                }
+            ])
+            console.log(deptObj);
+            connection.query("INSERT INTO role SET ?", {
+                title: roleName,
+                salary: roleSalary,
+                department_id: deptObj.id
+            }, function(err, res) {
+                if(err) throw err;
+                console.log("Role Added");
+                mainMenu();
+            })
+        })
+    })
+}
+
+// function that allows user to add a department
+const addEmpDept = () => {
+    inquirer.prompt([
+        {
+            name: "deptName",
+            message: "What department would you like to add?",
+            type: "input"
+        }
+    ]).then(res => {
+        let deptName = res.deptName;
+        connection.query("INSERT INTO department SET ?", {
+            name: deptName
+        }, function(err, res){
+            if(err) throw err;
+            console.log("Department Added");
+            mainMenu();
+        })
+    })
+}
+
+
+
+
+
+
 
 connection.connect(function(err) {
     if (err) throw err;
