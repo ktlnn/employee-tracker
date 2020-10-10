@@ -30,7 +30,6 @@ const mainMenu = () => {
                 "Add role",
                 "Add department",
                 "Update employee role",
-                "Update employee department",
                 "Update employee manager",
                 "Delete a role",
                 "Delete a manager",
@@ -249,7 +248,7 @@ const updateEmpRole = () => {
                 choices: empChoices
             }
         ])
-        connection.query("Select * FROM role", async (err, res) => {
+        connection.query("SELECT * FROM role", async (err, res) => {
             if (err) throw err;
             const roleChoices = res.map(({ id, title }) => ({
                 name: title,
@@ -273,14 +272,19 @@ const updateEmpRole = () => {
     })
 }
 
-// function that allows user to update employee's department
+// function that allows user to update employee's manager
 const updateEmpMan = () => {
+    // selecting the table employee
     connection.query("SELECT * FROM employee", async (err, res) => {
         if (err) throw err;
+        // keeping track of id, first name, and last name of employee
+        // using map to translate information to "name" and "value" 
+        // doing this to allow for inquirer.prompt to use the const empChoices as the choices
         const empChoices = res.map(({ id, first_name, last_name }) => ({
             name: first_name + " " + last_name,
             value: id
         }))
+        // asking user a question and using empChoices as the choices
         const empObj = await inquirer.prompt([
             {
                 type: "list",
@@ -289,12 +293,14 @@ const updateEmpMan = () => {
                 choices: empChoices
             }
         ])
-        connection.query("Select * FROM employee WHERE manager_id IS NOT NULL", async (err, res) => {
+        // selecting only managers from employee list
+        connection.query("SELECT * FROM employee WHERE manager_id IS NOT NULL", async (err, res) => {
             if (err) throw err;
             const manChoices = res.map(({ id, first_name, last_name }) => ({
                 name: first_name + " " + last_name,
                 value: id
             }))
+            // this prompt returns an object, keeping track of object in order to target the id wanted
             const manObj = await inquirer.prompt([
                 {
                     type: "list",
@@ -303,6 +309,7 @@ const updateEmpMan = () => {
                     choices: manChoices
                 }
             ])
+            // query that updates employee's manager using the manager id selected and employee id selected from above
             connection.query("UPDATE employee SET manager_id = " + manObj.manager + " WHERE id = " + empObj.employee + "",
                 function (err, res) {
                     if (err) throw err;
@@ -313,8 +320,82 @@ const updateEmpMan = () => {
     })
 }
 
+// function that allows user to delete a role
+const deleteEmpRole = () => {
+    connection.query("SELECT * FROM role", async (err, res) => {
+        if (err) throw err;
+        const roleChoices = res.map(({ id, title }) => ({
+            name: title,
+            value: id
+        }))
+        const roleObj = await inquirer.prompt([
+            {
+                type: "list",
+                name: "role",
+                message: "Which role would you like to delete?",
+                choices: roleChoices
+            }
+        ])
+        connection.query("DELETE FROM role WHERE id = " + roleObj.role + "",
+            function (err, res) {
+                if (err) throw err;
+                console.log("Role Deleted");
+                mainMenu();
+            });
+    })
+}
 
+// function that allows user to delete a manager
+const deleteEmpMan = () => {
+    connection.query("SELECT * FROM employee WHERE manager_id IS NOT NULL", async (err, res) => {
+        if (err) throw err;
+        const manChoices = res.map(({ id, first_name, last_name }) => ({
+            name: first_name + " " + last_name,
+            value: id
+        }))
 
+        const manObj = await inquirer.prompt([
+            {
+                type: "list",
+                name: "manager",
+                message: "Which manager would you like to delete?",
+                choices: manChoices
+            }
+        ])
+
+        connection.query("DELETE FROM employee WHERE manager_id = " + manObj.manager + "",
+            function (err, res) {
+                if (err) throw err;
+                console.log("Manager Deleted");
+                mainMenu();
+            });
+    });
+}
+
+// function that allows user to delete a department
+const deleteEmpDept = () => {
+    connection.query("SELECT * FROM department", async (err, res) => {
+        if (err) throw err;
+        const deptChoices = res.map(({ id, name }) => ({
+            name: name,
+            value: id
+        }))
+        const deptObj = await inquirer.prompt([
+            {
+                type: "list",
+                name: "department",
+                message: "Which department would you like to delete?",
+                choices: deptChoices
+            }
+        ])
+        connection.query("DELETE FROM department WHERE id = " + deptObj.department + "",
+            function (err, res) {
+                if (err) throw err;
+                console.log("Department Deleted")
+            }
+        );
+    });
+}
 
 
 
