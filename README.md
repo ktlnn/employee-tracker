@@ -24,11 +24,13 @@ Having a Content Management System allows for non-developers to interact with in
 Employee Tracker is a server side application that utilizes MySQL, node, and inquirer. Employee Tracker allows users to view, add, update, and delete roles, departments, and employees with ease. Queries were utilized to select from the database tables and translated into javascript in order to add functionality. 
 
 ## How to Use Employee Tracker 
-In your terminal
+In your terminal:
+```
     - Clone repository using `git clone` git@github.com:ktlnn/employee-tracker.git
     - Run `npm install` OR `yarn install` to install required dependencies for Employee Tracker
     - Run `node server` to start the server
     - Enjoy! 
+```
 
 ## Questions 
 If you have any questions about Employee Tracker, feel free to email me at: ktlnn.nguyen@gmail.com
