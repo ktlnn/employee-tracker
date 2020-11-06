@@ -25,10 +25,10 @@ Employee Tracker is a server side application that utilizes MySQL, node, and inq
 
 ## How to Use Employee Tracker 
 In your terminal
-    1. Clone repository using `git clone` git@github.com:ktlnn/employee-tracker.git
-    2. Run `npm install` OR `yarn install` to install required dependencies for Employee Tracker
-    3. Run `node server` to start the server
-    4. Enjoy! 
+    - Clone repository using `git clone` git@github.com:ktlnn/employee-tracker.git
+    - Run `npm install` OR `yarn install` to install required dependencies for Employee Tracker
+    - Run `node server` to start the server
+    - Enjoy! 
 
 ## Questions 
 If you have any questions about Employee Tracker, feel free to email me at: ktlnn.nguyen@gmail.com
